@@ -1,0 +1,46 @@
+{
+    "name":              "aequasi/cache",
+    "description":       "A PSR-6 Cache Implementation",
+    "type":              "library",
+    "license":           "MIT",
+    "minimum-stability": "stable",
+    "keywords":          ["php", "cache", "psr-6"],
+    "homepage":          "https://github.com/aequasi/psr-6-cache",
+    "authors":           [
+        {
+            "name":     "Aaron Scherer",
+            "email":    "aequasi@gmail.com",
+            "homepage": "https://github.com/aequasi"
+        },
+        {
+            "name":     "Tobias Nyholm",
+            "email":    "tobias.nyholm@gmail.com",
+            "homepage": "https://github.com/nyholm"
+        }
+    ],
+    "support":           {
+        "email": "aequasi@gmail.com"
+    },
+    "require":           {
+        "psr/cache": "dev-master"
+    },
+    "repositories":      [
+        {
+            "type": "git",
+            "url":  "https://github.com/php-fig/cache.git"
+        }
+    ],
+    "require-dev":       {
+        "phpunit/phpunit": "~5.1"
+    },
+    "autoload":          {
+        "psr-4": {
+            "Aequasi\\Cache\\": "src/"
+        }
+    },
+    "autoload-dev":      {
+        "psr-4": {
+            "Aequasi\\Cache\\Tests\\": "tests/"
+        }
+    }
+}
