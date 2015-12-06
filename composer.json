@@ -21,7 +21,7 @@
     "require":           {
         "psr/cache": "dev-master"
     },
-    "provides": {
+    "provide": {
         "psr/cache-implementation": "1.0.0"
     },
     "repositories":      [
