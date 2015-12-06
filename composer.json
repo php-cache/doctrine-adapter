@@ -5,7 +5,7 @@
     "license":           "MIT",
     "minimum-stability": "stable",
     "keywords":          ["cache", "psr-6", "doctrine"],
-    "homepage":          "https://github.com/php-cache/psr-6-cache",
+    "homepage":          "https://github.com/php-cache/doctrine-adapter",
     "authors":           [
         {
             "name":     "Aaron Scherer",
