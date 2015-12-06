@@ -1,6 +1,6 @@
 <?php
 
-namespace Aequasi\Cache\Exception;
+namespace Cache\Doctrine\Exception;
 
 class InvalidArgumentException extends \Exception implements \Psr\Cache\InvalidArgumentException
 {

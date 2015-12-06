@@ -1,11 +1,16 @@
 {
-    "name":              "aequasi/cache",
-    "description":       "A PSR-6 Cache Implementation",
+    "name":              "cache/doctrine-cache",
+    "description":       "A PSR-6 Cache Implementation using Doctrine",
     "type":              "library",
     "license":           "MIT",
     "minimum-stability": "stable",
-    "keywords":          ["php", "cache", "psr-6"],
-    "homepage":          "https://github.com/aequasi/psr-6-cache",
+    "keywords":          [
+        "php",
+        "cache",
+        "psr-6",
+        "doctrine"
+    ],
+    "homepage":          "https://github.com/php-cache/psr-6-cache",
     "authors":           [
         {
             "name":     "Aaron Scherer",
@@ -35,12 +40,12 @@
     },
     "autoload":          {
         "psr-4": {
-            "Aequasi\\Cache\\": "src/"
+            "Cache\\Doctrine\\": "src/"
         }
     },
     "autoload-dev":      {
         "psr-4": {
-            "Aequasi\\Cache\\Tests\\": "tests/"
+            "Cache\\Doctrine\\Tests\\": "tests/"
         }
     }
 }

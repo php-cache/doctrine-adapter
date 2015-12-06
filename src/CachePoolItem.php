@@ -1,15 +1,15 @@
 <?php
 
-namespace Aequasi\Cache;
+namespace Cache\Doctrine;
 
-use Aequasi\Cache\Exception\InvalidArgumentException;
+use Cache\Doctrine\Exception\InvalidArgumentException;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FlushableCache;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
- * This is a bridge between PSR6 and aDoctrine cache.
+ * This is a bridge between PSR-6 and aDoctrine cache.
  *
  * @author Aaron Scherer <aequasi@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Aequasi\Cache;
+namespace Cache\Doctrine;
 
 use Psr\Cache\CacheItemInterface;
 
