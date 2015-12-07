@@ -9,6 +9,8 @@ namespace Cache\Doctrine;
 interface HasExpirationDateInterface
 {
     /**
+     * The date and time when the object expires.
+     *
      * @return \DateTime|null
      */
     public function getExpirationDate();

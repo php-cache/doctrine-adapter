@@ -1,6 +1,6 @@
 <?php
 
-namespace Cache\Doctrine\Tests;
+namespace Cache\Doctrine\tests;
 
 use Cache\Doctrine\CacheItem;
 use Psr\Cache\CacheItemInterface;
@@ -25,7 +25,7 @@ class CacheItemTest extends \PHPUnit_Framework_TestCase
     {
         $item = new CacheItem('test_key');
 
-        $ref       = new \ReflectionObject($item);
+        $ref = new \ReflectionObject($item);
         $valueProp = $ref->getProperty('value');
         $valueProp->setAccessible(true);
         $hasValueProp = $ref->getProperty('hasValue');
@@ -72,10 +72,9 @@ class CacheItemTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNull($item->getExpirationDate());
 
-
         $date = new \DateTime();
 
-        $ref  = new \ReflectionObject($item);
+        $ref = new \ReflectionObject($item);
         $prop = $ref->getProperty('expirationDate');
         $prop->setAccessible(true);
         $prop->setValue($item, $date);

@@ -51,7 +51,7 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface
      */
     public function set($value)
     {
-        $this->value    = $value;
+        $this->value = $value;
         $this->hasValue = true;
 
         return $this;

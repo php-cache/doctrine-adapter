@@ -123,7 +123,12 @@ class CachePool implements CacheItemPoolInterface
             );
         }
 
-        return $this->cache->save($item->getKey(), $item, $item->getExpirationDate()->getTimestamp() - time());
+        $timeToLive = 0;
+        if(null !== $expirationDate = $item->getExpirationDate()) {
+            $timeToLive = $expirationDate->getTimestamp() - time();
+        }
+
+        return $this->cache->save($item->getKey(), $item, $timeToLive);
     }
 
     /**
