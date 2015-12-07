@@ -2,11 +2,13 @@
 
 namespace Cache\Doctrine;
 
+use Psr\Cache\CacheItemInterface;
+
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-class CacheItem implements CacheItemInterface
+class CacheItem implements HasExpirationDateInterface, CacheItemInterface
 {
     /**
      * @var string
@@ -76,23 +78,7 @@ class CacheItem implements CacheItemInterface
             return true;
         }
 
-        return !$this->isExpired();
-    }
-
-    /**
-     * @return bool
-     */
-    public function isExpired()
-    {
-        if (!$this->hasValue) {
-            return true;
-        }
-
-        if ($this->expirationDate === null) {
-            return false;
-        }
-
-        return new \DateTime() > $this->expirationDate;
+        return ((new \DateTime()) <= $this->expirationDate);
     }
 
     /**
