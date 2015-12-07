@@ -4,7 +4,11 @@
     "type":              "library",
     "license":           "MIT",
     "minimum-stability": "stable",
-    "keywords":          ["cache", "psr-6", "doctrine"],
+    "keywords":          [
+        "cache",
+        "psr-6",
+        "doctrine"
+    ],
     "homepage":          "https://github.com/php-cache/doctrine-adapter",
     "authors":           [
         {
@@ -19,9 +23,10 @@
         }
     ],
     "require":           {
-        "psr/cache": "dev-master"
+        "psr/cache":      "dev-master",
+        "doctrine/cache": "^1.3"
     },
-    "provide": {
+    "provide":           {
         "psr/cache-implementation": "1.0.0"
     },
     "repositories":      [
