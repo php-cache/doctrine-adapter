@@ -76,7 +76,7 @@ class CacheItem implements CacheItemInterface
             return true;
         }
 
-        return $this->isExpired();
+        return !$this->isExpired();
     }
 
     /**
@@ -84,7 +84,15 @@ class CacheItem implements CacheItemInterface
      */
     public function isExpired()
     {
-        return $this->hasValue && ((new \DateTime()) <= $this->expirationDate);
+        if (!$this->hasValue) {
+            return true;
+        }
+
+        if ($this->expirationDate === null) {
+            return false;
+        }
+
+        return new \DateTime() > $this->expirationDate;
     }
 
     /**
