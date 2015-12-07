@@ -32,6 +32,15 @@ class CacheItem implements CacheItemInterface
     private $hasValue = false;
 
     /**
+     *
+     * @param string $key
+     */
+    public function __construct($key)
+    {
+        $this->key = $key;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getKey()
@@ -95,8 +104,7 @@ class CacheItem implements CacheItemInterface
             $this->expirationDate = new \DateTime();
             $this->expirationDate->add($time);
         } else {
-            $this->expirationDate = new \DateTime();
-            $this->expirationDate->add(new \DateInterval('P'.$time.'S'));
+            $this->expirationDate = new \DateTime(sprintf('+%sseconds', $time));
         }
 
         return $this;
