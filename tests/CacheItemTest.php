@@ -66,34 +66,48 @@ class CacheItemTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($item->isHit());
     }
 
-    public function testExpiresAt()
+    public function testGetExpirationDate()
     {
         $item = new CacheItem('test_key');
+
+        $this->assertNull($item->getExpirationDate());
+
+
+        $date = new \DateTime();
 
         $ref  = new \ReflectionObject($item);
         $prop = $ref->getProperty('expirationDate');
         $prop->setAccessible(true);
+        $prop->setValue($item, $date);
 
-        $this->assertNull($prop->getValue($item));
+        $this->assertEquals($date, $item->getExpirationDate());
+    }
+
+    public function testExpiresAt()
+    {
+        $item = new CacheItem('test_key');
+
+        $this->assertNull($item->getExpirationDate());
 
         $item->expiresAt(new \DateTime('+1 second'));
 
-        $this->assertEquals(new \DateTime('+1 second'), $prop->getValue($item));
+        $this->assertEquals(new \DateTime('+1 second'), $item->getExpirationDate());
     }
 
     public function testExpiresAfter()
     {
         $item = new CacheItem('test_key');
 
-        $ref  = new \ReflectionObject($item);
-        $prop = $ref->getProperty('expirationDate');
-        $prop->setAccessible(true);
+        $this->assertNull($item->getExpirationDate());
 
-        $this->assertNull($prop->getValue($item));
+        $item->expiresAfter(null);
+        $this->assertNull($this->getExpectedException());
+
+        $item->expiresAfter(new \DateInterval('PT1S'));
+        $this->assertEquals(new \DateTime('+1 second'), $item->getExpirationDate());
 
         $item->expiresAfter(1);
-
-        $this->assertEquals(new \DateTime('+1 second'), $prop->getValue($item));
+        $this->assertEquals(new \DateTime('+1 second'), $item->getExpirationDate());
     }
 
     public function testIsExpired()
@@ -110,17 +124,5 @@ class CacheItemTest extends \PHPUnit_Framework_TestCase
 
         $item->expiresAt(new \DateTime('-50 seconds'));
         $this->assertTrue($item->isExpired());
-    }
-
-    public function testGetExpirationDate()
-    {
-        $item = new CacheItem('test_key');
-
-        $this->assertNull($item->getExpirationDate());
-
-        $date = new \DateTime();
-        $item->expiresAt($date);
-
-        $this->assertEquals($date, $item->getExpirationDate());
     }
 }
