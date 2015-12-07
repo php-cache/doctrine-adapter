@@ -2,8 +2,6 @@
 
 namespace Cache\Doctrine;
 
-use Psr\Cache\CacheItemInterface;
-
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
@@ -49,6 +47,17 @@ class CacheItem implements CacheItemInterface
     /**
      * {@inheritdoc}
      */
+    public function set($value)
+    {
+        $this->value    = $value;
+        $this->hasValue = true;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function get()
     {
         return $this->value;
@@ -67,18 +76,23 @@ class CacheItem implements CacheItemInterface
             return true;
         }
 
-        return ((new \DateTime()) <= $this->expirationDate);
+        return $this->isExpired();
     }
 
     /**
-     * {@inheritdoc}
+     * @return bool
      */
-    public function set($value)
+    public function isExpired()
     {
-        $this->value = $value;
-        $this->hasValue = true;
+        return $this->hasValue && ((new \DateTime()) <= $this->expirationDate);
+    }
 
-        return $this;
+    /**
+     * @return \DateTime|null
+     */
+    public function getExpirationDate()
+    {
+        return $this->expirationDate;
     }
 
     /**
