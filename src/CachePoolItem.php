@@ -116,10 +116,8 @@ class CachePoolItem implements CacheItemPoolInterface
      */
     public function save(CacheItemInterface $item)
     {
-        return $this->cache->save(
-            $item->getKey(),
-            $item
-        );
+        //TODO add TTL
+        return $this->cache->save($item->getKey(), $item);
     }
 
     /**
