@@ -5,7 +5,6 @@ namespace Cache\Doctrine;
 use Psr\Cache\CacheItemInterface;
 
 /**
- *
  * @author Aaron Scherer <aequasi@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
@@ -32,7 +31,6 @@ class CacheItem implements CacheItemInterface
     private $hasValue = false;
 
     /**
-     *
      * @param string $key
      */
     public function __construct($key)
@@ -41,7 +39,7 @@ class CacheItem implements CacheItemInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getKey()
     {
@@ -49,7 +47,7 @@ class CacheItem implements CacheItemInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function get()
     {
@@ -57,7 +55,7 @@ class CacheItem implements CacheItemInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function isHit()
     {
@@ -69,11 +67,11 @@ class CacheItem implements CacheItemInterface
             return true;
         }
 
-        return ((new \DateTime) <= $this->expirationDate);
+        return ((new \DateTime()) <= $this->expirationDate);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function set($value)
     {
@@ -84,7 +82,7 @@ class CacheItem implements CacheItemInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function expiresAt($expiration)
     {
@@ -94,7 +92,7 @@ class CacheItem implements CacheItemInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function expiresAfter($time)
     {
