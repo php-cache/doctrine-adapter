@@ -108,20 +108,4 @@ class CacheItemTest extends \PHPUnit_Framework_TestCase
         $item->expiresAfter(1);
         $this->assertEquals(new \DateTime('+1 second'), $item->getExpirationDate());
     }
-
-    public function testIsExpired()
-    {
-        $item = new CacheItem('test_key');
-
-        $this->assertTrue($item->isExpired());
-
-        $item->set('test');
-        $this->assertFalse($item->isExpired());
-
-        $item->expiresAt(new \DateTime('+5 seconds'));
-        $this->assertFalse($item->isExpired());
-
-        $item->expiresAt(new \DateTime('-50 seconds'));
-        $this->assertTrue($item->isExpired());
-    }
 }
