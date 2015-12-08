@@ -68,7 +68,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
 
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.*:non_item_key/')->andReturnNull();
+        $this->mockDoctrine->shouldReceive('fetch')->with('/.*:non_item_key$/')->andReturnNull();
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
     }
 
