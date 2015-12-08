@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of php-cache\doctrine-adapter package.
+ *
+ * (c) 2015-2015 Aaron Scherer <aequasi@gmail.com>
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Cache\Doctrine;
 
 use Cache\Doctrine\Exception\InvalidArgumentException;
@@ -24,7 +33,7 @@ class CachePool implements CacheItemPoolInterface
     /**
      * @var CacheItemInterface[] deferred
      */
-    private $deferred;
+    private $deferred = [];
 
     /**
      * @param Cache $cache
@@ -117,15 +126,11 @@ class CachePool implements CacheItemPoolInterface
      */
     public function save(CacheItemInterface $item)
     {
-        if (!$item instanceof HasExpirationDateInterface) {
-            throw new InvalidArgumentException(
-                'Item passed must be an instance of Cache\Doctrine\HasExpirationDateInterface'
-            );
-        }
-
         $timeToLive = 0;
-        if(null !== $expirationDate = $item->getExpirationDate()) {
-            $timeToLive = $expirationDate->getTimestamp() - time();
+        if ($item instanceof HasExpirationDateInterface) {
+            if (null !== $expirationDate = $item->getExpirationDate()) {
+                $timeToLive = $expirationDate->getTimestamp() - time();
+            }
         }
 
         return $this->cache->save($item->getKey(), $item, $timeToLive);
