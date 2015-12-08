@@ -124,10 +124,14 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface, Tagga
     {
         if ($time === null) {
             $this->expirationDate = null;
-        } elseif ($time instanceof \DateInterval) {
+        }
+
+        if ($time instanceof \DateInterval) {
             $this->expirationDate = new \DateTime();
             $this->expirationDate->add($time);
-        } else {
+        }
+
+        if (is_integer($time)) {
             $this->expirationDate = new \DateTime(sprintf('+%sseconds', $time));
         }
 
