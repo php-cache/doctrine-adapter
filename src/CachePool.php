@@ -24,7 +24,7 @@ class CachePool implements CacheItemPoolInterface
     /**
      * @var CacheItemInterface[] deferred
      */
-    private $deferred;
+    private $deferred = [];
 
     /**
      * @param Cache $cache
@@ -117,15 +117,11 @@ class CachePool implements CacheItemPoolInterface
      */
     public function save(CacheItemInterface $item)
     {
-        if (!$item instanceof HasExpirationDateInterface) {
-            throw new InvalidArgumentException(
-                'Item passed must be an instance of Cache\Doctrine\HasExpirationDateInterface'
-            );
-        }
-
         $timeToLive = 0;
-        if(null !== $expirationDate = $item->getExpirationDate()) {
-            $timeToLive = $expirationDate->getTimestamp() - time();
+        if ($item instanceof HasExpirationDateInterface) {
+            if (null !== $expirationDate = $item->getExpirationDate()) {
+                $timeToLive = $expirationDate->getTimestamp() - time();
+            }
         }
 
         return $this->cache->save($item->getKey(), $item, $timeToLive);
