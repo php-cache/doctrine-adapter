@@ -70,6 +70,19 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     /**
      * {@inheritdoc}
      */
+    protected function getTagItem($key)
+    {
+        $item = $this->cache->fetch($key);
+        if (false === $item || !$item instanceof CacheItemInterface) {
+            $item = new CacheItem($key);
+        }
+
+        return $item;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getItems(array $keys = [], array $tags = array())
     {
         $items = [];
