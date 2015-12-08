@@ -50,9 +50,10 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface, Tagga
     /**
      * @param string $key
      */
-    public function __construct($key)
+    public function __construct($key, array $tags = array())
     {
-        $this->key = $key;
+        $this->key  = $key;
+        $this->tags = $tags;
     }
 
     /**
@@ -129,22 +130,6 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface, Tagga
         } else {
             $this->expirationDate = new \DateTime(sprintf('+%sseconds', $time));
         }
-
-        return $this;
-    }
-
-    /**
-     * @param array $tags
-     *
-     * @return CacheItem
-     */
-    public function setTags(array $tags)
-    {
-        if (!empty($this->tags)) {
-            // TODO what we really want is: Not to be able to change tags after we saved the item
-            throw new InvalidArgumentException('Can not change tags once they are set');
-        }
-        $this->tags = $tags;
 
         return $this;
     }
