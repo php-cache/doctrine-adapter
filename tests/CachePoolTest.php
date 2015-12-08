@@ -14,6 +14,7 @@ namespace Cache\Doctrine\Tests;
 use Cache\Doctrine\CacheItem;
 use Cache\Doctrine\CachePool;
 use Cache\Doctrine\HasExpirationDateInterface;
+use Cache\Doctrine\Exception\InvalidArgumentException;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FlushableCache;
 use Mockery as m;
@@ -66,6 +67,20 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->mockDoctrine->shouldReceive('fetch')->with('test_key')->andReturn($this->mockItem);
 
         $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
+
+        $item = m::mock(CacheItemInterface::class);
+        $this->mockDoctrine->shouldReceive('fetch')->with('non_item_key')->andReturn($item);
+        $this->assertEquals($item, $this->pool->getItem('non_item_key'));
+    }
+
+    public function testGetItemException()
+    {
+        $this->setExpectedExceptionRegExp(
+            InvalidArgumentException::class,
+            '/^Passed key is invalid$/'
+        );
+
+        $this->pool->getItem(new \stdClass());
     }
 
     public function testGetItems()
@@ -107,11 +122,25 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->pool->deleteItem('key'));
     }
 
+    public function testDeleteItemException()
+    {
+        $this->setExpectedExceptionRegExp(
+            InvalidArgumentException::class,
+            '/^Passed key is invalid$/'
+        );
+
+        $this->pool->deleteItem(new \stdClass());
+    }
+
     public function testDeleteItems()
     {
         $this->mockDoctrine->shouldReceive('delete')->twice()->andReturn(true);
 
         $this->assertTrue($this->pool->deleteItems(['1', '2']));
+
+        $this->mockDoctrine->shouldReceive('delete')->twice()->andReturn(true, false);
+
+        $this->assertFalse($this->pool->deleteItems(['1', '2']));
     }
 
     public function testSave()
