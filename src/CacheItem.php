@@ -11,13 +11,16 @@
 
 namespace Cache\Doctrine;
 
+use Cache\Doctrine\Exception\InvalidArgumentException;
+use Cache\Taggable\TaggableItemInterface;
 use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-class CacheItem implements HasExpirationDateInterface, CacheItemInterface
+class CacheItem implements HasExpirationDateInterface, CacheItemInterface, TaggableItemInterface
 {
     /**
      * @var string
@@ -38,6 +41,11 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface
      * @var bool
      */
     private $hasValue = false;
+
+    /**
+     * @var array
+     */
+    private $tags = array();
 
     /**
      * @param string $key
@@ -123,5 +131,29 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @param array $tags
+     *
+     * @return CacheItem
+     */
+    public function setTags(array $tags)
+    {
+        if (!empty($this->tags)) {
+            // TODO what we really want is: Not to be able to change tags after we saved the item
+            throw new InvalidArgumentException('Can not change tags once they are set');
+        }
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTags()
+    {
+        return $this->tags;
     }
 }

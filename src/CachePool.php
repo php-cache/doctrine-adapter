@@ -12,6 +12,9 @@
 namespace Cache\Doctrine;
 
 use Cache\Doctrine\Exception\InvalidArgumentException;
+use Cache\Taggable\TaggableItemInterface;
+use Cache\Taggable\TaggablePoolInterface;
+use Cache\Taggable\TaggablePoolTrait;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FlushableCache;
 use Psr\Cache\CacheItemInterface;
@@ -23,8 +26,10 @@ use Psr\Cache\CacheItemPoolInterface;
  * @author Aaron Scherer <aequasi@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-class CachePool implements CacheItemPoolInterface
+class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
 {
+    use TaggablePoolTrait;
+
     /**
      * @var Cache
      */
@@ -46,16 +51,17 @@ class CachePool implements CacheItemPoolInterface
     /**
      * {@inheritdoc}
      */
-    public function getItem($key)
+    public function getItem($key, array $tags = array())
     {
         if (!is_string($key)) {
             throw new InvalidArgumentException('Passed key is invalid');
         }
 
-        /** @var CacheItemInterface $item */
-        $item = $this->cache->fetch($key);
+        $taggedKey = $this->generateCacheKey($key, $tags);
+
+        $item = $this->cache->fetch($taggedKey);
         if (false === $item || !$item instanceof CacheItemInterface) {
-            $item = new CacheItem($key);
+            $item = new CacheItem($taggedKey);
         }
 
         return $item;
@@ -64,11 +70,11 @@ class CachePool implements CacheItemPoolInterface
     /**
      * {@inheritdoc}
      */
-    public function getItems(array $keys = [])
+    public function getItems(array $keys = [], array $tags = array())
     {
         $items = [];
         foreach ($keys as $key) {
-            $items[$key] = $this->getItem($key);
+            $items[$key] = $this->getItem($key, $tags);
         }
 
         return $items;
@@ -77,16 +83,24 @@ class CachePool implements CacheItemPoolInterface
     /**
      * {@inheritdoc}
      */
-    public function hasItem($key)
+    public function hasItem($key, array $tags = array())
     {
-        return $this->getItem($key)->isHit();
+        return $this->getItem($key, $tags)->isHit();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function clear()
+    public function clear(array $tags = array())
     {
+        if (!empty($tags)) {
+            foreach ($tags as $tag) {
+                $this->flushTag($tag);
+            }
+
+            return true;
+        }
+
         if ($this->cache instanceof FlushableCache) {
             return $this->cache->flushAll();
         }
@@ -97,23 +111,24 @@ class CachePool implements CacheItemPoolInterface
     /**
      * {@inheritdoc}
      */
-    public function deleteItem($key)
+    public function deleteItem($key, array $tags = array())
     {
         if (!is_string($key)) {
             throw new InvalidArgumentException('Passed key is invalid');
         }
+        $taggedKey = $this->generateCacheKey($key, $tags);
 
-        return $this->cache->delete($key);
+        return $this->cache->delete($taggedKey);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deleteItems(array $keys)
+    public function deleteItems(array $keys, array $tags = array())
     {
         $deleted = true;
         foreach ($keys as $key) {
-            if (!$this->deleteItem($key)) {
+            if (!$this->deleteItem($key, $tags)) {
                 $deleted = false;
             }
         }
@@ -133,7 +148,13 @@ class CachePool implements CacheItemPoolInterface
             }
         }
 
-        return $this->cache->save($item->getKey(), $item, $timeToLive);
+        $tags = array();
+        if  ($item instanceof TaggableItemInterface) {
+            $tags = $item->getTags();
+        }
+        $taggedKey = $this->generateCacheKey($item->getKey(), $tags);
+
+        return $this->cache->save($taggedKey, $item, $timeToLive);
     }
 
     /**
@@ -152,7 +173,7 @@ class CachePool implements CacheItemPoolInterface
     public function commit()
     {
         $saved = true;
-        foreach ($this->deferred as $key => $item) {
+        foreach ($this->deferred as $item) {
             if (!$this->save($item)) {
                 $saved = false;
             }
