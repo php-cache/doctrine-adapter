@@ -112,6 +112,10 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $newPool = new CachePool($cache);
         $this->assertTrue($newPool->clear());
+
+        $cache->shouldReceive('fetch');
+        $cache->shouldReceive('save');
+        $this->assertTrue($newPool->clear(['dummy_tag']));
     }
 
     public function testDeleteItem()

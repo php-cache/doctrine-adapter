@@ -117,4 +117,11 @@ class CacheItemTest extends \PHPUnit_Framework_TestCase
         $item->expiresAfter(1);
         $this->assertEquals(new \DateTime('+1 second'), $item->getExpirationDate());
     }
+
+    public function testGetTests()
+    {
+        $item = new CacheItem('test_key', ['test_tag']);
+
+        $this->assertEquals(['test_tag'], $item->getTags());
+    }
 }
