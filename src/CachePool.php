@@ -5,7 +5,7 @@ namespace Cache\Doctrine;
 use Cache\Doctrine\Exception\InvalidArgumentException;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FlushableCache;
-use Psr\Cache\CacheItemInterface as PsrCacheItemInterface;
+use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
@@ -44,7 +44,8 @@ class CachePool implements CacheItemPoolInterface
         }
 
         /** @var CacheItemInterface $item */
-        if (false === $item = $this->cache->fetch($key)) {
+        $item = $this->cache->fetch($key);
+        if (false === $item || !$item instanceof CacheItemInterface) {
             $item = new CacheItem($key);
         }
 
@@ -69,15 +70,7 @@ class CachePool implements CacheItemPoolInterface
      */
     public function hasItem($key)
     {
-        $item = $this->getItem($key);
-
-        if ($item->isExpired()) {
-            $this->deleteItem($key);
-
-            return false;
-        }
-
-        return $item->isHit();
+        return $this->getItem($key)->isHit();
     }
 
     /**
@@ -122,21 +115,26 @@ class CachePool implements CacheItemPoolInterface
     /**
      * {@inheritdoc}
      */
-    public function save(PsrCacheItemInterface $item)
+    public function save(CacheItemInterface $item)
     {
-        if (!$item instanceof CacheItemInterface) {
+        if (!$item instanceof HasExpirationDateInterface) {
             throw new InvalidArgumentException(
-                'Item passed must be an instance of Cache\Doctrine\CacheItemInterface'
+                'Item passed must be an instance of Cache\Doctrine\HasExpirationDateInterface'
             );
         }
 
-        return $this->cache->save($item->getKey(), $item, $item->getExpirationDate()->getTimestamp() - time());
+        $timeToLive = 0;
+        if(null !== $expirationDate = $item->getExpirationDate()) {
+            $timeToLive = $expirationDate->getTimestamp() - time();
+        }
+
+        return $this->cache->save($item->getKey(), $item, $timeToLive);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function saveDeferred(PsrCacheItemInterface $item)
+    public function saveDeferred(CacheItemInterface $item)
     {
         $this->deferred[] = $item;
 
