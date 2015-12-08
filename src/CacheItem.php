@@ -20,7 +20,7 @@ use Psr\Cache\CacheItemPoolInterface;
  * @author Aaron Scherer <aequasi@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-class CacheItem implements HasExpirationDateInterface, CacheItemInterface, TaggableItemInterface
+class CacheItem implements HasExpirationDateInterface, CacheItemInterface
 {
     /**
      * @var string
@@ -43,17 +43,11 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface, Tagga
     private $hasValue = false;
 
     /**
-     * @var array
-     */
-    private $tags = array();
-
-    /**
      * @param string $key
      */
-    public function __construct($key, array $tags = array())
+    public function __construct($key)
     {
         $this->key  = $key;
-        $this->tags = $tags;
     }
 
     /**
@@ -136,13 +130,5 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface, Tagga
         }
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTags()
-    {
-        return $this->tags;
     }
 }
