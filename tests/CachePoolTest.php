@@ -72,6 +72,11 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
     }
 
+    public function testGetTagItem()
+    {
+        
+    } 
+
     public function testGetItemException()
     {
         $this->setExpectedExceptionRegExp(
