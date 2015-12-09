@@ -64,17 +64,22 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItem()
     {
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.*:test_key$/')->andReturn($this->mockItem);
+        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:test_key$/')->andReturn($this->mockItem);
 
         $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
 
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.*:non_item_key$/')->andReturnNull();
+        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:non_item_key$/')->andReturnNull();
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
     }
 
     public function testGetTagItem()
     {
-        
+        $this->mockDoctrine->shouldReceive('fetch')->with('test_key')->andReturn($this->mockItem);
+
+        $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
+
+        $this->mockDoctrine->shouldReceive('fetch')->with('non_item_key')->andReturnNull();
+        $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
     } 
 
     public function testGetItemException()
@@ -125,7 +130,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeleteItem()
     {
-        $this->mockDoctrine->shouldReceive('delete')->with('/.*:key$/')->andReturn(true);
+        $this->mockDoctrine->shouldReceive('delete')->with('/.+:key$/')->andReturn(true);
 
         $this->assertTrue($this->pool->deleteItem('key'));
     }
