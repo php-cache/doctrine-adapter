@@ -59,9 +59,17 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
 
         $taggedKey = $this->generateCacheKey($key, $tags);
 
-        $item = $this->cache->fetch($taggedKey);
+        return $this->getTagItem($taggedKey);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getTagItem($key)
+    {
+        $item = $this->cache->fetch($key);
         if (false === $item || !$item instanceof CacheItemInterface) {
-            $item = new CacheItem($taggedKey, $tags);
+            $item = new CacheItem($key);
         }
 
         return $item;
@@ -148,13 +156,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
             }
         }
 
-        $tags = array();
-        if  ($item instanceof TaggableItemInterface) {
-            $tags = $item->getTags();
-        }
-        $taggedKey = $this->generateCacheKey($item->getKey(), $tags);
-
-        return $this->cache->save($taggedKey, $item, $timeToLive);
+        return $this->cache->save($item->getKey(), $item, $timeToLive);
     }
 
     /**

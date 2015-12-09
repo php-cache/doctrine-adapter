@@ -9,6 +9,9 @@ matrix:
 
 sudo: false
 
+services:
+  - memcached
+
 before_install:
     - phpenv config-rm xdebug.ini
     - pip install --user codecov

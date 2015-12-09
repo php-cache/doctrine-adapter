@@ -64,13 +64,23 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItem()
     {
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.*:test_key$/')->andReturn($this->mockItem);
+        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:test_key$/')->andReturn($this->mockItem);
 
         $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
 
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.*:non_item_key$/')->andReturnNull();
+        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:non_item_key$/')->andReturnNull();
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
     }
+
+    public function testGetTagItem()
+    {
+        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:test_key$/')->andReturn($this->mockItem);
+
+        $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
+
+        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:non_item_key$/')->andReturnNull();
+        $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
+    } 
 
     public function testGetItemException()
     {
@@ -112,11 +122,15 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $newPool = new CachePool($cache);
         $this->assertTrue($newPool->clear());
+
+        $cache->shouldReceive('fetch');
+        $cache->shouldReceive('save');
+        $this->assertTrue($newPool->clear(['dummy_tag']));
     }
 
     public function testDeleteItem()
     {
-        $this->mockDoctrine->shouldReceive('delete')->with('/.*:key$/')->andReturn(true);
+        $this->mockDoctrine->shouldReceive('delete')->with('/.+:key$/')->andReturn(true);
 
         $this->assertTrue($this->pool->deleteItem('key'));
     }
@@ -146,7 +160,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
     {
         $item = m::mock(CacheItemInterface::class);
         $item->shouldReceive('getKey')->withNoArgs()->andReturn('test_key');
-        $this->mockDoctrine->shouldReceive('save')->with('/.*:test_key$/', $item, 0)->andReturn(true);
+        $this->mockDoctrine->shouldReceive('save')->with('test_key', $item, 0)->andReturn(true);
 
         $this->assertTrue($this->pool->save($item));
 
@@ -155,7 +169,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $item = m::mock(CacheItemInterface::class.', '.HasExpirationDateInterface::class);
         $item->shouldReceive('getExpirationDate')->withNoArgs()->andReturn($date);
         $item->shouldReceive('getKey')->withNoArgs()->andReturn('test_key_2');
-        $this->mockDoctrine->shouldReceive('save')->with('/.*:test_key_2$/', $item, 1)->andReturn(true);
+        $this->mockDoctrine->shouldReceive('save')->with('test_key_2', $item, 1)->andReturn(true);
 
         $this->assertTrue($this->pool->save($item));
 

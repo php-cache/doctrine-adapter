@@ -19,6 +19,7 @@
 
   <logging>
     <log type="coverage-text" target="php://stdout"/>
+    <log type="coverage-html" target="./coverageReport"/>
   </logging>
 
   <groups>
