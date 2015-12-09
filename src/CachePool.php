@@ -59,12 +59,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
 
         $taggedKey = $this->generateCacheKey($key, $tags);
 
-        $item = $this->cache->fetch($taggedKey);
-        if (false === $item || !$item instanceof CacheItemInterface) {
-            $item = new CacheItem($taggedKey, $tags);
-        }
-
-        return $item;
+        return $this->getTagItem($taggedKey);
     }
 
     /**
