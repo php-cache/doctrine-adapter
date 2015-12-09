@@ -1,5 +1,4 @@
 # Doctrine PSR-6 adapter [![codecov.io](https://codecov.io/github/php-cache/doctrine-adapter/coverage.svg?branch=master)](https://codecov.io/github/php-cache/doctrine-adapter?branch=master)
-=======================
 
 This is a implementation for the PSR-6 that wrapps the doctrine cache
 
