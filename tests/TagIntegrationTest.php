@@ -6,7 +6,7 @@ use Cache\Doctrine\CachePool;
 use Cache\IntegrationTests\TaggableCachePoolTest;
 use Doctrine\Common\Cache\ArrayCache;
 
-class FunctionaTaglTest extends TaggableCachePoolTest
+class TagIntegrationTest extends TaggableCachePoolTest
 {
     function createCachePool()
     {
