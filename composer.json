@@ -23,20 +23,14 @@
         }
     ],
     "require":           {
-        "psr/cache":               "dev-master",
-        "cache/taggable-cache":    "dev-master",
-        "cache/integration-tests": "dev-master",
+        "psr/cache":               "1.0.x-dev",
+        "cache/taggable-cache":    "^0.1",
+        "cache/integration-tests": "^0.1",
         "doctrine/cache":          "^1.3"
     },
     "provide":           {
         "psr/cache-implementation": "1.0.0"
     },
-    "repositories":      [
-        {
-            "type": "git",
-            "url":  "https://github.com/php-fig/cache.git"
-        }
-    ],
     "require-dev":       {
         "phpunit/phpunit": "^5.1|^4.0",
         "mockery/mockery": "^0.9.4"
