@@ -1,6 +1,13 @@
-# Doctrine PSR-6 adapter
+# Doctrine PSR-6 adapter 
 
 This is a implementation for the PSR-6 that wrapps the doctrine cache
+
+#### Badges
+
+| Service | Badge |
+| ------- | ----- |
+ Travis   | [![Build Status](https://travis-ci.org/php-cache/doctrine-adapter.svg?branch=master)](https://travis-ci.org/php-cache/doctrine-adapter)
+CodeCoverage | [![codecov.io](https://codecov.io/github/php-cache/doctrine-adapter/coverage.svg?branch=master)](https://codecov.io/github/php-cache/doctrine-adapter?branch=master)
 
 ## Usage
 
