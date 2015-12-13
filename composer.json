@@ -1,13 +1,14 @@
 {
     "name":              "cache/doctrine-adapter",
-    "description":       "A PSR-6 Cache Implementation using Doctrine",
+    "description":       "A PSR-6 cache implementation using Doctrine. This implementation supports tags",
     "type":              "library",
     "license":           "MIT",
     "minimum-stability": "stable",
     "keywords":          [
         "cache",
         "psr-6",
-        "doctrine"
+        "doctrine",
+        "tag"
     ],
     "homepage":          "https://github.com/php-cache/doctrine-adapter",
     "authors":           [
