@@ -23,7 +23,7 @@
         }
     ],
     "require":           {
-        "psr/cache":            "1.0.x-dev",
+        "psr/cache":            "1.0.0",
         "cache/taggable-cache": "^0.1",
         "doctrine/cache":       "^1.3"
     },
