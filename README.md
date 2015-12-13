@@ -6,6 +6,12 @@ This is a implementation for the PSR-6 that wraps the Doctrine cache. This imple
 If you want to use this library with Symfony you may be intrerested in
 [Doctrine Adapter Bundle](https://github.com/php-cache/doctrine-adapter-bundle). 
 
+## To Install
+
+Run the following in your project root, assuming you have composer set up for your project
+```sh
+composer require cache/doctrine-adapter
+```
 
 ## Usage
 
