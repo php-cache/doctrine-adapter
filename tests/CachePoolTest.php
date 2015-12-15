@@ -13,8 +13,8 @@ namespace Cache\Doctrine\Tests;
 
 use Cache\Doctrine\CacheItem;
 use Cache\Doctrine\CachePool;
-use Cache\Doctrine\HasExpirationDateInterface;
 use Cache\Doctrine\Exception\InvalidArgumentException;
+use Cache\Doctrine\HasExpirationDateInterface;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FlushableCache;
 use Mockery as m;
@@ -44,7 +44,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->mockItem = m::mock(CacheItem::class);
+        $this->mockItem     = m::mock(CacheItem::class);
         $this->mockDoctrine = m::mock(Cache::class);
 
         $this->pool = new CachePool($this->mockDoctrine);
@@ -80,7 +80,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
         $this->mockDoctrine->shouldReceive('fetch')->with('/.+:non_item_key$/')->andReturnNull();
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
-    } 
+    }
 
     public function testGetItemException()
     {
@@ -117,7 +117,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertFalse($this->pool->clear());
 
-        $cache = m::mock(Cache::class .','. FlushableCache::class);
+        $cache = m::mock(Cache::class.','.FlushableCache::class);
         $cache->shouldReceive('flushAll')->andReturn(true);
 
         $newPool = new CachePool($cache);
@@ -172,12 +172,11 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->mockDoctrine->shouldReceive('save')->with('test_key_2', $item, 1)->andReturn(true);
 
         $this->assertTrue($this->pool->save($item));
-
     }
 
     public function testSaveDeferred()
     {
-        $ref = new \ReflectionObject($this->pool);
+        $ref  = new \ReflectionObject($this->pool);
         $prop = $ref->getProperty('deferred');
         $prop->setAccessible(true);
 

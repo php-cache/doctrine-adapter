@@ -11,10 +11,7 @@
 
 namespace Cache\Doctrine;
 
-use Cache\Doctrine\Exception\InvalidArgumentException;
-use Cache\Taggable\TaggableItemInterface;
 use Psr\Cache\CacheItemInterface;
-use Psr\Cache\CacheItemPoolInterface;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
@@ -23,22 +20,22 @@ use Psr\Cache\CacheItemPoolInterface;
 class CacheItem implements HasExpirationDateInterface, CacheItemInterface
 {
     /**
-     * @var string
+     * @type string
      */
     private $key;
 
     /**
-     * @var mixed
+     * @type mixed
      */
     private $value;
 
     /**
-     * @var \DateTime|null
+     * @type \DateTime|null
      */
     private $expirationDate = null;
 
     /**
-     * @var bool
+     * @type bool
      */
     private $hasValue = false;
 
@@ -90,7 +87,7 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface
             return true;
         }
 
-        return ((new \DateTime()) <= $this->expirationDate);
+        return (new \DateTime()) <= $this->expirationDate;
     }
 
     /**
@@ -125,7 +122,7 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface
             $this->expirationDate->add($time);
         }
 
-        if (is_integer($time)) {
+        if (is_int($time)) {
             $this->expirationDate = new \DateTime(sprintf('+%sseconds', $time));
         }
 
