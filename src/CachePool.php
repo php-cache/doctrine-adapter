@@ -12,7 +12,6 @@
 namespace Cache\Doctrine;
 
 use Cache\Doctrine\Exception\InvalidArgumentException;
-use Cache\Taggable\TaggableItemInterface;
 use Cache\Taggable\TaggablePoolInterface;
 use Cache\Taggable\TaggablePoolTrait;
 use Doctrine\Common\Cache\Cache;
@@ -31,12 +30,12 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     use TaggablePoolTrait;
 
     /**
-     * @var Cache
+     * @type Cache
      */
     private $cache;
 
     /**
-     * @var CacheItemInterface[] deferred
+     * @type CacheItemInterface[] deferred
      */
     private $deferred = [];
 
@@ -51,7 +50,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     /**
      * {@inheritdoc}
      */
-    public function getItem($key, array $tags = array())
+    public function getItem($key, array $tags = [])
     {
         if (!is_string($key)) {
             throw new InvalidArgumentException('Passed key is invalid');
@@ -78,7 +77,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     /**
      * {@inheritdoc}
      */
-    public function getItems(array $keys = [], array $tags = array())
+    public function getItems(array $keys = [], array $tags = [])
     {
         $items = [];
         foreach ($keys as $key) {
@@ -91,7 +90,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     /**
      * {@inheritdoc}
      */
-    public function hasItem($key, array $tags = array())
+    public function hasItem($key, array $tags = [])
     {
         return $this->getItem($key, $tags)->isHit();
     }
@@ -99,7 +98,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     /**
      * {@inheritdoc}
      */
-    public function clear(array $tags = array())
+    public function clear(array $tags = [])
     {
         if (!empty($tags)) {
             foreach ($tags as $tag) {
@@ -119,7 +118,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     /**
      * {@inheritdoc}
      */
-    public function deleteItem($key, array $tags = array())
+    public function deleteItem($key, array $tags = [])
     {
         if (!is_string($key)) {
             throw new InvalidArgumentException('Passed key is invalid');
@@ -132,7 +131,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     /**
      * {@inheritdoc}
      */
-    public function deleteItems(array $keys, array $tags = array())
+    public function deleteItems(array $keys, array $tags = [])
     {
         $deleted = true;
         foreach ($keys as $key) {
