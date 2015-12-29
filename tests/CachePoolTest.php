@@ -207,6 +207,13 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($prop->getValue($this->pool));
         $this->assertTrue($this->pool->commit());
         $this->assertEmpty($prop->getValue($this->pool));
+    }
+
+    public function testCommitBadItems()
+    {
+        $ref  = new \ReflectionObject($this->pool);
+        $prop = $ref->getProperty('deferred');
+        $prop->setAccessible(true);
 
         $badItem = m::mock(CacheItemInterface::class);
         $badItem->shouldReceive('getKey')->once()->andReturn('bad_key');
@@ -216,6 +223,27 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($prop->getValue($this->pool));
 
         $this->assertFalse($this->pool->commit());
-        $this->assertEmpty($prop->getValue($this->pool));
+        $this->assertNotEmpty($prop->getValue($this->pool));
+    }
+
+    public function testCommitMultipleItems()
+    {
+        $ref  = new \ReflectionObject($this->pool);
+        $prop = $ref->getProperty('deferred');
+        $prop->setAccessible(true);
+
+        // the middle object is bad
+        $this->mockDoctrine->shouldReceive('save')->andReturn(true, false, true);
+
+        for ($i = 0; $i < 3; $i++) {
+            $item = m::mock(CacheItemInterface::class);
+            $item->shouldReceive('getKey')->andReturn('key_'.$i);
+            $this->pool->saveDeferred($item);
+        }
+
+        $this->assertNotEmpty($prop->getValue($this->pool));
+
+        $this->assertFalse($this->pool->commit());
+        $this->assertNotEmpty($prop->getValue($this->pool));
     }
 }
