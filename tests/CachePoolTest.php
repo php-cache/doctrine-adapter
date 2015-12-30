@@ -223,7 +223,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($prop->getValue($this->pool));
 
         $this->assertFalse($this->pool->commit());
-        $this->assertNotEmpty($prop->getValue($this->pool));
+        $this->assertEmpty($prop->getValue($this->pool));
     }
 
     public function testCommitMultipleItems()
@@ -244,6 +244,6 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEmpty($prop->getValue($this->pool));
 
         $this->assertFalse($this->pool->commit());
-        $this->assertNotEmpty($prop->getValue($this->pool));
+        $this->assertEmpty($prop->getValue($this->pool));
     }
 }
