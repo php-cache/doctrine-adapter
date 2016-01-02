@@ -72,7 +72,7 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface
     public function get()
     {
         if (!$this->isHit()) {
-            return null;
+            return;
         }
 
         return $this->value;

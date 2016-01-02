@@ -13,7 +13,6 @@ namespace Cache\Doctrine\Tests;
 
 use Cache\Doctrine\CacheItem;
 use Cache\Doctrine\CachePool;
-use Cache\Doctrine\Exception\InvalidArgumentException;
 use Cache\Doctrine\HasExpirationDateInterface;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FlushableCache;

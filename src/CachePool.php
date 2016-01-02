@@ -32,7 +32,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     /**
      * List of invalid (or reserved) key characters.
      *
-     * @var string
+     * @type string
      */
     const KEY_INVALID_CHARACTERS = '{}()/\@:';
 
@@ -57,11 +57,10 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     /**
      * Make sure to commit before we destruct.
      */
-    function __destruct()
+    public function __destruct()
     {
         $this->commit();
     }
-
 
     /**
      * {@inheritdoc}
@@ -216,6 +215,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
 
     /**
      * @param string $key
+     *
      * @throws InvalidArgumentException
      */
     private function validateKey($key)
