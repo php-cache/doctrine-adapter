@@ -80,7 +80,9 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     protected function getItemWithoutGenerateCacheKey($key)
     {
         if (isset($this->deferred[$key])) {
-            return $this->deferred[$key];
+            $item = $this->deferred[$key];
+
+            return is_object($item) ? clone $item : $item;
         }
 
         $item = $this->cache->fetch($key);
