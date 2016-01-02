@@ -64,21 +64,21 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItem()
     {
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:test_key$/')->andReturn($this->mockItem);
+        $this->mockDoctrine->shouldReceive('fetch')->with('test_key')->andReturn($this->mockItem);
 
         $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
 
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:non_item_key$/')->andReturnNull();
+        $this->mockDoctrine->shouldReceive('fetch')->with('non_item_key')->andReturnNull();
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
     }
 
     public function testGetTagItem()
     {
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:test_key$/')->andReturn($this->mockItem);
+        $this->mockDoctrine->shouldReceive('fetch')->with('test_key')->andReturn($this->mockItem);
 
         $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
 
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:non_item_key$/')->andReturnNull();
+        $this->mockDoctrine->shouldReceive('fetch')->with('non_item_key')->andReturnNull();
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
     }
 
@@ -120,7 +120,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeleteItem()
     {
-        $this->mockDoctrine->shouldReceive('delete')->with('/.+:key$/')->andReturn(true);
+        $this->mockDoctrine->shouldReceive('delete')->with('key')->andReturn(true);
 
         $this->assertTrue($this->pool->deleteItem('key'));
     }
@@ -159,12 +159,16 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $ref  = new \ReflectionObject($this->pool);
         $prop = $ref->getProperty('deferred');
         $prop->setAccessible(true);
+        $this->mockItem->shouldReceive('getKey')->once()->andReturn('key');
 
         $this->assertEmpty($prop->getValue($this->pool));
 
         $this->assertTrue($this->pool->saveDeferred($this->mockItem));
         $this->assertNotEmpty($prop->getValue($this->pool));
-        $this->assertInstanceOf(CacheItemInterface::class, $prop->getValue($this->pool)[0]);
+        $this->assertInstanceOf(CacheItemInterface::class, $prop->getValue($this->pool)['key']);
+
+        // Remove the deferred item
+        $this->pool->clear();
     }
 
     public function testCommit()

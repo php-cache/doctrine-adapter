@@ -55,6 +55,15 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     }
 
     /**
+     * Make sure to commit before we destruct.
+     */
+    function __destruct()
+    {
+        $this->commit();
+    }
+
+
+    /**
      * {@inheritdoc}
      */
     public function getItem($key, array $tags = [])
@@ -70,6 +79,10 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
      */
     protected function getTagItem($key)
     {
+        if (isset($this->deferred[$key])) {
+            return $this->deferred[$key];
+        }
+
         $item = $this->cache->fetch($key);
         if (false === $item || !$item instanceof CacheItemInterface) {
             $item = new CacheItem($key);
@@ -112,6 +125,9 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
             return true;
         }
 
+        // Clear the deferred items
+        $this->deferred = [];
+
         if ($this->cache instanceof FlushableCache) {
             return $this->cache->flushAll();
         }
@@ -127,6 +143,10 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
         $this->validateKey($key);
         $taggedKey = $this->generateCacheKey($key, $tags);
 
+        // Delete form deferred
+        unset($this->deferred[$taggedKey]);
+
+        // Delete form cache
         return $this->cache->delete($taggedKey);
     }
 
@@ -165,7 +185,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
      */
     public function saveDeferred(CacheItemInterface $item)
     {
-        $this->deferred[] = $item;
+        $this->deferred[$item->getKey()] = $item;
 
         return true;
     }
