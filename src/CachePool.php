@@ -248,4 +248,14 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
             ));
         }
     }
+
+    /**
+     * @param string $name
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function validateTagName($name)
+    {
+        $this->validateKey($name);
+    }
 }
