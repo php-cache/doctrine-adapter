@@ -11,14 +11,18 @@
 
 namespace Cache\Doctrine;
 
+use Cache\Taggable\TaggableItemInterface;
+use Cache\Taggable\TaggableItemTrait;
 use Psr\Cache\CacheItemInterface;
 
 /**
  * @author Aaron Scherer <aequasi@gmail.com>
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-class CacheItem implements HasExpirationDateInterface, CacheItemInterface
+class CacheItem implements HasExpirationDateInterface, CacheItemInterface, TaggableItemInterface
 {
+    use TaggableItemTrait;
+
     /**
      * @type string
      */
@@ -44,7 +48,8 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface
      */
     public function __construct($key)
     {
-        $this->key  = $key;
+        $this->taggedKey = $key;
+        $this->key       = $this->getKeyFromTaggedKey($key);
     }
 
     /**
@@ -71,6 +76,10 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface
      */
     public function get()
     {
+        if (!$this->isHit()) {
+            return;
+        }
+
         return $this->value;
     }
 

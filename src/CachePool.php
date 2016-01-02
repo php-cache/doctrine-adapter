@@ -12,6 +12,7 @@
 namespace Cache\Doctrine;
 
 use Cache\Doctrine\Exception\InvalidArgumentException;
+use Cache\Taggable\TaggableItemInterface;
 use Cache\Taggable\TaggablePoolInterface;
 use Cache\Taggable\TaggablePoolTrait;
 use Doctrine\Common\Cache\Cache;
@@ -28,6 +29,13 @@ use Psr\Cache\CacheItemPoolInterface;
 class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
 {
     use TaggablePoolTrait;
+
+    /**
+     * List of invalid (or reserved) key characters.
+     *
+     * @type string
+     */
+    const KEY_INVALID_CHARACTERS = '{}()/\@:';
 
     /**
      * @type Cache
@@ -48,24 +56,35 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Make sure to commit before we destruct.
      */
-    public function getItem($key, array $tags = [])
+    public function __destruct()
     {
-        if (!is_string($key)) {
-            throw new InvalidArgumentException('Passed key is invalid');
-        }
-
-        $taggedKey = $this->generateCacheKey($key, $tags);
-
-        return $this->getTagItem($taggedKey);
+        $this->commit();
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getTagItem($key)
+    public function getItem($key, array $tags = [])
     {
+        $this->validateKey($key);
+        $taggedKey = $this->generateCacheKey($key, $tags);
+
+        return $this->getItemWithoutGenerateCacheKey($taggedKey);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getItemWithoutGenerateCacheKey($key)
+    {
+        if (isset($this->deferred[$key])) {
+            $item = $this->deferred[$key];
+
+            return is_object($item) ? clone $item : $item;
+        }
+
         $item = $this->cache->fetch($key);
         if (false === $item || !$item instanceof CacheItemInterface) {
             $item = new CacheItem($key);
@@ -108,6 +127,9 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
             return true;
         }
 
+        // Clear the deferred items
+        $this->deferred = [];
+
         if ($this->cache instanceof FlushableCache) {
             return $this->cache->flushAll();
         }
@@ -120,11 +142,13 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
      */
     public function deleteItem($key, array $tags = [])
     {
-        if (!is_string($key)) {
-            throw new InvalidArgumentException('Passed key is invalid');
-        }
+        $this->validateKey($key);
         $taggedKey = $this->generateCacheKey($key, $tags);
 
+        // Delete form deferred
+        unset($this->deferred[$taggedKey]);
+
+        // Delete form cache
         return $this->cache->delete($taggedKey);
     }
 
@@ -155,7 +179,13 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
             }
         }
 
-        return $this->cache->save($item->getKey(), $item, $timeToLive);
+        if ($item instanceof TaggableItemInterface) {
+            $key = $item->getTaggedKey();
+        } else {
+            $key = $item->getKey();
+        }
+
+        return $this->cache->save($key, $item, $timeToLive);
     }
 
     /**
@@ -163,7 +193,13 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
      */
     public function saveDeferred(CacheItemInterface $item)
     {
-        $this->deferred[] = $item;
+        if ($item instanceof TaggableItemInterface) {
+            $key = $item->getTaggedKey();
+        } else {
+            $key = $item->getKey();
+        }
+
+        $this->deferred[$key] = $item;
 
         return true;
     }
@@ -190,5 +226,38 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     public function getCache()
     {
         return $this->cache;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @throws InvalidArgumentException
+     */
+    private function validateKey($key)
+    {
+        if (!is_string($key)) {
+            throw new InvalidArgumentException(sprintf(
+                'Cache key must be string, "%s" given', gettype($key)
+            ));
+        }
+
+        $invalid = preg_quote(static::KEY_INVALID_CHARACTERS, '|');
+        if (preg_match('|['.$invalid.']|', $key)) {
+            throw new InvalidArgumentException(sprintf(
+                'Invalid key: "%s". The key contains one or more characters reserved for future extension: %s',
+                $key,
+                static::KEY_INVALID_CHARACTERS
+            ));
+        }
+    }
+
+    /**
+     * @param string $name
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function validateTagName($name)
+    {
+        $this->validateKey($name);
     }
 }

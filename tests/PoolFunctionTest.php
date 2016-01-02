@@ -17,10 +17,19 @@ use Doctrine\Common\Cache\ArrayCache;
 
 class PoolFunctionTest extends BaseTest
 {
+    private $doctrineCache = null;
+
     public function createCachePool()
     {
-        $doctrineCache = new ArrayCache();
+        return new CachePool($this->getDoctrineCache());
+    }
 
-        return new CachePool($doctrineCache);
+    private function getDoctrineCache()
+    {
+        if ($this->doctrineCache === null) {
+            $this->doctrineCache = new ArrayCache();
+        }
+
+        return $this->doctrineCache;
     }
 }

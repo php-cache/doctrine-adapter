@@ -13,7 +13,6 @@ namespace Cache\Doctrine\Tests;
 
 use Cache\Doctrine\CacheItem;
 use Cache\Doctrine\CachePool;
-use Cache\Doctrine\Exception\InvalidArgumentException;
 use Cache\Doctrine\HasExpirationDateInterface;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FlushableCache;
@@ -64,32 +63,22 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testGetItem()
     {
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:test_key$/')->andReturn($this->mockItem);
+        $this->mockDoctrine->shouldReceive('fetch')->with('test_key')->andReturn($this->mockItem);
 
         $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
 
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:non_item_key$/')->andReturnNull();
+        $this->mockDoctrine->shouldReceive('fetch')->with('non_item_key')->andReturnNull();
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
     }
 
     public function testGetTagItem()
     {
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:test_key$/')->andReturn($this->mockItem);
+        $this->mockDoctrine->shouldReceive('fetch')->with('test_key')->andReturn($this->mockItem);
 
         $this->assertEquals($this->mockItem, $this->pool->getItem('test_key'));
 
-        $this->mockDoctrine->shouldReceive('fetch')->with('/.+:non_item_key$/')->andReturnNull();
+        $this->mockDoctrine->shouldReceive('fetch')->with('non_item_key')->andReturnNull();
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
-    }
-
-    public function testGetItemException()
-    {
-        $this->setExpectedExceptionRegExp(
-            InvalidArgumentException::class,
-            '/^Passed key is invalid$/'
-        );
-
-        $this->pool->getItem(new \stdClass());
     }
 
     public function testGetItems()
@@ -130,19 +119,9 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
 
     public function testDeleteItem()
     {
-        $this->mockDoctrine->shouldReceive('delete')->with('/.+:key$/')->andReturn(true);
+        $this->mockDoctrine->shouldReceive('delete')->with('key')->andReturn(true);
 
         $this->assertTrue($this->pool->deleteItem('key'));
-    }
-
-    public function testDeleteItemException()
-    {
-        $this->setExpectedExceptionRegExp(
-            InvalidArgumentException::class,
-            '/^Passed key is invalid$/'
-        );
-
-        $this->pool->deleteItem(new \stdClass());
     }
 
     public function testDeleteItems()
@@ -179,12 +158,17 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $ref  = new \ReflectionObject($this->pool);
         $prop = $ref->getProperty('deferred');
         $prop->setAccessible(true);
+        $this->mockItem->shouldReceive('getKey')->andReturn('key');
+        $this->mockItem->shouldReceive('getTaggedKey')->andReturn('key');
 
         $this->assertEmpty($prop->getValue($this->pool));
 
         $this->assertTrue($this->pool->saveDeferred($this->mockItem));
         $this->assertNotEmpty($prop->getValue($this->pool));
-        $this->assertInstanceOf(CacheItemInterface::class, $prop->getValue($this->pool)[0]);
+        $this->assertInstanceOf(CacheItemInterface::class, $prop->getValue($this->pool)['key']);
+
+        // Remove the deferred item
+        $this->pool->clear();
     }
 
     public function testCommit()
@@ -194,7 +178,8 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $prop->setAccessible(true);
 
         $this->mockItem->shouldReceive('getExpirationDate')->once()->andReturnNull();
-        $this->mockItem->shouldReceive('getKey')->once()->andReturn('test_key');
+        $this->mockItem->shouldReceive('getKey')->andReturn('test_key');
+        $this->mockItem->shouldReceive('getTaggedKey')->andReturn('test_key');
         $this->mockItem->shouldReceive('getTags')->once()->andReturn([]);
         $this->mockDoctrine->shouldReceive('save')->once()->andReturn(true);
 
