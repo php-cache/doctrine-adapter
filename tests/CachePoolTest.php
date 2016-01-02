@@ -82,16 +82,6 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(CacheItemInterface::class, $this->pool->getItem('non_item_key'));
     }
 
-    public function testGetItemException()
-    {
-        $this->setExpectedExceptionRegExp(
-            InvalidArgumentException::class,
-            '/^Passed key is invalid$/'
-        );
-
-        $this->pool->getItem(new \stdClass());
-    }
-
     public function testGetItems()
     {
         $itemOne = m::mock(CacheItemInterface::class);
@@ -133,16 +123,6 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->mockDoctrine->shouldReceive('delete')->with('/.+:key$/')->andReturn(true);
 
         $this->assertTrue($this->pool->deleteItem('key'));
-    }
-
-    public function testDeleteItemException()
-    {
-        $this->setExpectedExceptionRegExp(
-            InvalidArgumentException::class,
-            '/^Passed key is invalid$/'
-        );
-
-        $this->pool->deleteItem(new \stdClass());
     }
 
     public function testDeleteItems()

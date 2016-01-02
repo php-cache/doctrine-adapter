@@ -200,6 +200,12 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
      */
     private function validateKey($key)
     {
+        if (!is_string($key) && !is_int($key) && !is_float($key)) {
+            throw new InvalidArgumentException(sprintf(
+                'Cache key must be string, "%s" given', gettype($key)
+            ));
+        }
+
         $invalid = preg_quote(static::KEY_INVALID_CHARACTERS, '|');
         if (preg_match('|['.$invalid.']|', $key)) {
             throw new InvalidArgumentException(sprintf(
