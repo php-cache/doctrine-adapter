@@ -12,6 +12,7 @@
 namespace Cache\Doctrine;
 
 use Cache\Doctrine\Exception\InvalidArgumentException;
+use Cache\Taggable\TaggableItemInterface;
 use Cache\Taggable\TaggablePoolInterface;
 use Cache\Taggable\TaggablePoolTrait;
 use Doctrine\Common\Cache\Cache;
@@ -176,7 +177,13 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
             }
         }
 
-        return $this->cache->save($item->getKey(), $item, $timeToLive);
+        if ($item instanceof TaggableItemInterface) {
+            $key = $item->getTaggedKey();
+        } else {
+            $key = $item->getKey();
+        }
+
+        return $this->cache->save($key, $item, $timeToLive);
     }
 
     /**
@@ -184,7 +191,13 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
      */
     public function saveDeferred(CacheItemInterface $item)
     {
-        $this->deferred[$item->getKey()] = $item;
+        if ($item instanceof TaggableItemInterface) {
+            $key = $item->getTaggedKey();
+        } else {
+            $key = $item->getKey();
+        }
+
+        $this->deferred[$key] = $item;
 
         return true;
     }

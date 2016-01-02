@@ -158,7 +158,8 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $ref  = new \ReflectionObject($this->pool);
         $prop = $ref->getProperty('deferred');
         $prop->setAccessible(true);
-        $this->mockItem->shouldReceive('getKey')->once()->andReturn('key');
+        $this->mockItem->shouldReceive('getKey')->andReturn('key');
+        $this->mockItem->shouldReceive('getTaggedKey')->andReturn('key');
 
         $this->assertEmpty($prop->getValue($this->pool));
 
@@ -177,7 +178,8 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $prop->setAccessible(true);
 
         $this->mockItem->shouldReceive('getExpirationDate')->once()->andReturnNull();
-        $this->mockItem->shouldReceive('getKey')->once()->andReturn('test_key');
+        $this->mockItem->shouldReceive('getKey')->andReturn('test_key');
+        $this->mockItem->shouldReceive('getTaggedKey')->andReturn('test_key');
         $this->mockItem->shouldReceive('getTags')->once()->andReturn([]);
         $this->mockDoctrine->shouldReceive('save')->once()->andReturn(true);
 
