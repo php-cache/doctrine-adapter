@@ -71,13 +71,13 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
         $this->validateKey($key);
         $taggedKey = $this->generateCacheKey($key, $tags);
 
-        return $this->getTagItem($taggedKey);
+        return $this->getItemWithoutGenerateCacheKey($taggedKey);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getTagItem($key)
+    protected function getItemWithoutGenerateCacheKey($key)
     {
         if (isset($this->deferred[$key])) {
             return $this->deferred[$key];
