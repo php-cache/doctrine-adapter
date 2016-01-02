@@ -30,6 +30,13 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     use TaggablePoolTrait;
 
     /**
+     * List of invalid (or reserved) key characters.
+     *
+     * @var string
+     */
+    const KEY_INVALID_CHARACTERS = '{}()/\@:';
+
+    /**
      * @type Cache
      */
     private $cache;
@@ -52,10 +59,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
      */
     public function getItem($key, array $tags = [])
     {
-        if (!is_string($key)) {
-            throw new InvalidArgumentException('Passed key is invalid');
-        }
-
+        $this->validateKey($key);
         $taggedKey = $this->generateCacheKey($key, $tags);
 
         return $this->getTagItem($taggedKey);
@@ -120,9 +124,7 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
      */
     public function deleteItem($key, array $tags = [])
     {
-        if (!is_string($key)) {
-            throw new InvalidArgumentException('Passed key is invalid');
-        }
+        $this->validateKey($key);
         $taggedKey = $this->generateCacheKey($key, $tags);
 
         return $this->cache->delete($taggedKey);
@@ -190,5 +192,21 @@ class CachePool implements CacheItemPoolInterface, TaggablePoolInterface
     public function getCache()
     {
         return $this->cache;
+    }
+
+    /**
+     * @param string $key
+     * @throws InvalidArgumentException
+     */
+    private function validateKey($key)
+    {
+        $invalid = preg_quote(static::KEY_INVALID_CHARACTERS, '|');
+        if (preg_match('|['.$invalid.']|', $key)) {
+            throw new InvalidArgumentException(sprintf(
+                'Invalid key: "%s". The key contains one or more characters reserved for future extension: %s',
+                $key,
+                static::KEY_INVALID_CHARACTERS
+            ));
+        }
     }
 }
