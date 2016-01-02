@@ -48,13 +48,14 @@ class CacheItem implements HasExpirationDateInterface, CacheItemInterface, Tagga
      */
     public function __construct($key)
     {
-        $this->key  = $key;
+        $this->taggedKey = $key;
+        $this->key       = $this->getKeyFromTaggedKey($key);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getTaggedKey()
+    public function getKey()
     {
         return $this->key;
     }
