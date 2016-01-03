@@ -42,6 +42,10 @@
     {
         "psr/cache-implementation": "1.0.0"
     },
+    "suggest":      {
+        "ext-memcached": "Allows for caching with Memcached",
+        "ext-redis":     "Allows for caching with Redis"
+    },
     "autoload":
     {
         "psr-4": {
