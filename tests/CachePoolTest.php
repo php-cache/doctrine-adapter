@@ -9,11 +9,11 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Cache\Doctrine\Tests;
+namespace Cache\Adapter\Doctrine\Tests;
 
-use Cache\Doctrine\CacheItem;
-use Cache\Doctrine\CachePool;
-use Cache\Doctrine\HasExpirationDateInterface;
+use Cache\Adapter\Common\CacheItem;
+use Cache\Adapter\Common\HasExpirationDateInterface;
+use Cache\Adapter\Doctrine\DoctrineCachePool;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\FlushableCache;
 use Mockery as m;
@@ -27,7 +27,7 @@ use Psr\Cache\CacheItemPoolInterface;
 class CachePoolTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @type CachePool
+     * @type DoctrineCachePool
      */
     private $pool;
 
@@ -46,12 +46,12 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->mockItem     = m::mock(CacheItem::class);
         $this->mockDoctrine = m::mock(Cache::class);
 
-        $this->pool = new CachePool($this->mockDoctrine);
+        $this->pool = new DoctrineCachePool($this->mockDoctrine);
     }
 
     public function testConstructor()
     {
-        $this->assertInstanceOf(CachePool::class, $this->pool);
+        $this->assertInstanceOf(DoctrineCachePool::class, $this->pool);
         $this->assertInstanceOf(CacheItemPoolInterface::class, $this->pool);
     }
 
@@ -109,7 +109,7 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $cache = m::mock(Cache::class.','.FlushableCache::class);
         $cache->shouldReceive('flushAll')->andReturn(true);
 
-        $newPool = new CachePool($cache);
+        $newPool = new DoctrineCachePool($cache);
         $this->assertTrue($newPool->clear());
 
         $cache->shouldReceive('fetch');
@@ -151,84 +151,5 @@ class CachePoolTest extends \PHPUnit_Framework_TestCase
         $this->mockDoctrine->shouldReceive('save')->with('test_key_2', $item, 1)->andReturn(true);
 
         $this->assertTrue($this->pool->save($item));
-    }
-
-    public function testSaveDeferred()
-    {
-        $ref  = new \ReflectionObject($this->pool);
-        $prop = $ref->getProperty('deferred');
-        $prop->setAccessible(true);
-        $this->mockItem->shouldReceive('getKey')->andReturn('key');
-        $this->mockItem->shouldReceive('getTaggedKey')->andReturn('key');
-
-        $this->assertEmpty($prop->getValue($this->pool));
-
-        $this->assertTrue($this->pool->saveDeferred($this->mockItem));
-        $this->assertNotEmpty($prop->getValue($this->pool));
-        $this->assertInstanceOf(CacheItemInterface::class, $prop->getValue($this->pool)['key']);
-
-        // Remove the deferred item
-        $this->pool->clear();
-    }
-
-    public function testCommit()
-    {
-        $ref  = new \ReflectionObject($this->pool);
-        $prop = $ref->getProperty('deferred');
-        $prop->setAccessible(true);
-
-        $this->mockItem->shouldReceive('getExpirationDate')->once()->andReturnNull();
-        $this->mockItem->shouldReceive('getKey')->andReturn('test_key');
-        $this->mockItem->shouldReceive('getTaggedKey')->andReturn('test_key');
-        $this->mockItem->shouldReceive('getTags')->once()->andReturn([]);
-        $this->mockDoctrine->shouldReceive('save')->once()->andReturn(true);
-
-        $this->assertEmpty($prop->getValue($this->pool));
-        $this->assertTrue($this->pool->commit());
-        $this->assertEmpty($prop->getValue($this->pool));
-
-        $this->pool->saveDeferred($this->mockItem);
-
-        $this->assertNotEmpty($prop->getValue($this->pool));
-        $this->assertTrue($this->pool->commit());
-        $this->assertEmpty($prop->getValue($this->pool));
-    }
-
-    public function testCommitBadItems()
-    {
-        $ref  = new \ReflectionObject($this->pool);
-        $prop = $ref->getProperty('deferred');
-        $prop->setAccessible(true);
-
-        $badItem = m::mock(CacheItemInterface::class);
-        $badItem->shouldReceive('getKey')->once()->andReturn('bad_key');
-        $this->mockDoctrine->shouldReceive('save')->once()->andReturn(false);
-
-        $this->pool->saveDeferred($badItem);
-        $this->assertNotEmpty($prop->getValue($this->pool));
-
-        $this->assertFalse($this->pool->commit());
-        $this->assertEmpty($prop->getValue($this->pool));
-    }
-
-    public function testCommitMultipleItems()
-    {
-        $ref  = new \ReflectionObject($this->pool);
-        $prop = $ref->getProperty('deferred');
-        $prop->setAccessible(true);
-
-        // the middle object is bad
-        $this->mockDoctrine->shouldReceive('save')->andReturn(true, false, true);
-
-        for ($i = 0; $i < 3; $i++) {
-            $item = m::mock(CacheItemInterface::class);
-            $item->shouldReceive('getKey')->andReturn('key_'.$i);
-            $this->pool->saveDeferred($item);
-        }
-
-        $this->assertNotEmpty($prop->getValue($this->pool));
-
-        $this->assertFalse($this->pool->commit());
-        $this->assertEmpty($prop->getValue($this->pool));
     }
 }

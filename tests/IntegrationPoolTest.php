@@ -9,19 +9,19 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Cache\Doctrine\Tests;
+namespace Cache\Adapter\Doctrine\Tests;
 
-use Cache\Doctrine\CachePool;
-use Cache\IntegrationTests\TaggableCachePoolTest;
+use Cache\Adapter\Doctrine\DoctrineCachePool;
+use Cache\IntegrationTests\CachePoolTest as BaseTest;
 use Doctrine\Common\Cache\ArrayCache;
 
-class TagIntegrationTest extends TaggableCachePoolTest
+class IntegrationPoolTest extends BaseTest
 {
     private $doctrineCache = null;
 
     public function createCachePool()
     {
-        return new CachePool($this->getDoctrineCache());
+        return new DoctrineCachePool($this->getDoctrineCache());
     }
 
     private function getDoctrineCache()
