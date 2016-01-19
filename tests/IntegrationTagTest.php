@@ -11,25 +11,9 @@
 
 namespace Cache\Adapter\Doctrine\Tests;
 
-use Cache\Adapter\Doctrine\DoctrineCachePool;
 use Cache\IntegrationTests\TaggableCachePoolTest;
-use Doctrine\Common\Cache\ArrayCache;
 
 class IntegrationTagTest extends TaggableCachePoolTest
 {
-    private $doctrineCache = null;
-
-    public function createCachePool()
-    {
-        return new DoctrineCachePool($this->getDoctrineCache());
-    }
-
-    private function getDoctrineCache()
-    {
-        if ($this->doctrineCache === null) {
-            $this->doctrineCache = new ArrayCache();
-        }
-
-        return $this->doctrineCache;
-    }
+    use CreatePoolTrait;
 }
