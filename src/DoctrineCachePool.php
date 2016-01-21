@@ -39,7 +39,11 @@ class DoctrineCachePool extends AbstractCachePool
 
     protected function fetchObjectFromCache($key)
     {
-        return $this->cache->fetch($key);
+        if (false === $data = $this->cache->fetch($key)) {
+            return [false, null];
+        }
+
+        return [true, unserialize($data)];
     }
 
     protected function clearAllObjectsFromCache()
@@ -62,7 +66,7 @@ class DoctrineCachePool extends AbstractCachePool
             $ttl = 0;
         }
 
-        return $this->cache->save($key, $item, $ttl);
+        return $this->cache->save($key, serialize($item->get()), $ttl);
     }
 
     /**

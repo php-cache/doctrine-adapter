@@ -1,15 +1,15 @@
-# Doctrine PSR-6 adapter 
-[![Build Status](https://travis-ci.org/php-cache/doctrine-adapter.svg?branch=master)](https://travis-ci.org/php-cache/doctrine-adapter) [![codecov.io](https://codecov.io/github/php-cache/doctrine-adapter/coverage.svg?branch=master)](https://codecov.io/github/php-cache/doctrine-adapter?branch=master) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/1ac09139-8edd-41a9-84ab-3d84791a2659/mini.png)](https://insight.sensiolabs.com/projects/1ac09139-8edd-41a9-84ab-3d84791a2659)
+# Doctrine PSR-6 Cache pool 
+[![Latest Stable Version](https://poser.pugx.org/cache/doctrine-adapter/v/stable)](https://packagist.org/packages/cache/doctrine-adapter) [![codecov.io](https://codecov.io/github/php-cache/doctrine-adapter/coverage.svg?branch=master)](https://codecov.io/github/php-cache/doctrine-adapter?branch=master) [![Build Status](https://travis-ci.org/php-cache/doctrine-adapter.svg?branch=master)](https://travis-ci.org/php-cache/doctrine-adapter) [![Total Downloads](https://poser.pugx.org/cache/doctrine-adapter/downloads)](https://packagist.org/packages/cache/doctrine-adapter)  [![Monthly Downloads](https://poser.pugx.org/cache/doctrine-adapter/d/monthly.png)](https://packagist.org/packages/cache/doctrine-adapter) [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
-This is a implementation for the PSR-6 that wraps the Doctrine cache. This implementation supports tags. 
+This is a PSR-6 cache implementation using Doctrine. It is a part of the PHP Cache organisation. To read about 
+features like tagging and hierarchy support please read the shared documentation at [www.php-cache.com](http://www.php-cache.com). 
 
-If you want to use this library with Symfony you may be intrerested in
-[Doctrine Adapter Bundle](https://github.com/php-cache/doctrine-adapter-bundle). 
+This is a PSR-6 to Doctrine bridge. If you are interested in a Doctrine to PSR-6 bridge you should have a look at 
+[PSR-6 Doctrine Bridge](https://github.com/php-cache/doctrine-bridge).
 
-## To Install
+### Install
 
-Run the following in your project root, assuming you have composer set up for your project
-```sh
+```bash
 composer require cache/doctrine-adapter
 ```
 
@@ -19,42 +19,14 @@ composer require cache/doctrine-adapter
 use Doctrine\Common\Cache\MemcachedCache;
 use Cache\Doctrine\CachePool;
 
-// Create a instance of Doctrine's MemcachedCache
+
 $memcached = new \Memcached();
 $memcached->addServer('localhost', 11211);
+
+// Create a instance of Doctrine's MemcachedCache
 $doctrineCache = new MemcachedCache();
 $doctrineCache->setMemcached($memcached);
 
 // Wrap Doctrine's cache with the PSR-6 adapter
 $pool = new CachePool($doctrineCache);
-
-/** @var CacheItemInterface $item */
-$item = $pool->getItem('key');
 ```
-
-## Tagging
-
-The `CachePool` implements `Cache\Taggable\TaggablePoolInterface` from [Taggable Cache](https://github.com/php-cache/taggable-cache). 
-Below is an example of how you could use tags: 
-
-```php
-
-$item = $pool->getItem('tobias', ['person']);
-$item->set('foobar');
-$pool->save($item);
-
-$item = $pool->getItem('aaron', ['person', 'developer']);
-$item->set('foobar');
-$pool->save($item);
-
-$pool->getItem('tobias', ['person'])->isHit(); // true
-$pool->getItem('aaron', ['person', 'developer'])->isHit(); // true
-
-// Clear all cache items tagged with 'developer'
-$pool->clear(['developer']);
-
-$pool->getItem('tobias', ['person'])->isHit(); // true
-$pool->getItem('aaron', ['person', 'developer'])->isHit(); // false
-```
-
-See more example and understand how you use tags here: https://github.com/php-cache/taggable-cache

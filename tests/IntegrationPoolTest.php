@@ -11,25 +11,9 @@
 
 namespace Cache\Adapter\Doctrine\Tests;
 
-use Cache\Adapter\Doctrine\DoctrineCachePool;
-use Cache\IntegrationTests\CachePoolTest as BaseTest;
-use Doctrine\Common\Cache\ArrayCache;
+use Cache\IntegrationTests\CachePoolTest;
 
-class IntegrationPoolTest extends BaseTest
+class IntegrationPoolTest extends CachePoolTest
 {
-    private $doctrineCache = null;
-
-    public function createCachePool()
-    {
-        return new DoctrineCachePool($this->getDoctrineCache());
-    }
-
-    private function getDoctrineCache()
-    {
-        if ($this->doctrineCache === null) {
-            $this->doctrineCache = new ArrayCache();
-        }
-
-        return $this->doctrineCache;
-    }
+    use CreatePoolTrait;
 }
